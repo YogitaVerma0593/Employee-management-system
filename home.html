@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="ISO-8859-1" />
+    <title>Employee Home</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+      crossorigin="anonymous"
+    />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+      }
+      .container {
+        width: 50%;
+        margin: 0 auto;
+        padding: 0px;
+        background-color: #fff;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      .details,
+      .update-form {
+        margin-bottom: 20px;
+      }
+      input[type="text"],
+      input[type="password"],
+      input[type="number"],
+      input[type="email"] {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box;
+      }
+      input[type="submit"],
+      button {
+        width: 100%;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        background-image: linear-gradient(
+          to right,
+          rgb(147, 50, 238),
+          rgb(81, 25, 210),
+          rgb(59, 4, 223)
+        );
+        color: #fff;
+        cursor: pointer;
+      }
+      input[type="submit"]:hover,
+      button:hover {
+        background-image: linear-gradient(
+          to right,
+          rgb(107, 14, 194),
+          rgb(55, 12, 157),
+          rgb(22, 2, 152)
+        );
+      }
+      .sec {
+        background-color: #edefef;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4 sec">
+          <div class="salary-calculation">
+            <h3 class="pt-5">Salary Till Date</h3>
+            <button id="calculate-salary">Calculate Salary</button><br />
+            <p>
+              <br />
+              <strong>Total Salary Till Date:</strong>
+              <span id="total-salary"></span>
+            </p>
+          </div>
+
+          <div class="updation">
+            <h3 class="pt-5">Update Profile</h3>
+            <button id="update">Update</button><br />
+          </div>
+        </div>
+        <div class="col-md-8">
+          <div class="details">
+            <h2 class="text-center pt-5">Your Details</h2>
+            <br />
+            <p><strong>User name:</strong> <span id="username"></span></p>
+            <br />
+            <p><strong>Id:</strong> <span id="Id"></span></p>
+            <br />
+            <p><strong>Age:</strong> <span id="age"></span></p>
+            <br />
+            <p><strong>Date of Joining:</strong> <span id="DOJ"></span></p>
+            <br />
+            <p><strong>Salary:</strong> <span id="Salary"></span></p>
+            <br />
+            <p><strong>Email:</strong> <span id="Email"></span></p>
+            <br />
+            <p><strong>Department:</strong> <span id="Department"></span></p>
+            <br />
+            <p><strong>Post:</strong> <span id="Post"></span></p>
+          </div>
+          <div class="update-form" style="display: none">
+            <h2 class="text-center pt-5">Update Details</h2>
+            <form id="updateForm" class="p-2">
+              <div class="mb-2 mt-3">
+                <label for="field" class="form-label">Field to Update</label>
+                <input
+                  type="text"
+                  class="form-control border-0 rounded-5"
+                  id="field"
+                  placeholder="Field"
+                  name="field"
+                  required
+                />
+              </div>
+              <div class="mb-4">
+                <label for="value" class="form-label">New Value:</label>
+                <input
+                  type="text"
+                  class="form-control border-0 rounded-5"
+                  id="value"
+                  placeholder="New Value"
+                  name="value"
+                  required
+                />
+              </div>
+              <div class="text-center">
+                <button type="submit" class="submit-btn">Update</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Retrieve user details from sessionStorage (assumes user details are stored here upon login)
+        const user = JSON.parse(sessionStorage.getItem("user"));
+
+        if (user) {
+          document.getElementById("username").innerText = user.username;
+          document.getElementById("Id").innerText = user.Id;
+          document.getElementById("age").innerText = user.age;
+          document.getElementById("DOJ").innerText = user.DOJ;
+          document.getElementById("Salary").innerText = user.Salary;
+          document.getElementById("Email").innerText = user.Email;
+          document.getElementById("Department").innerText = user.Department;
+          document.getElementById("Post").innerText = user.Post;
+        } else {
+          alert("No user details found. Please log in.");
+          window.location.href = "index.html";
+        }
+
+        // Show update form when the update button is clicked
+        document
+          .getElementById("update")
+          .addEventListener("click", function () {
+            document.querySelector(".update-form").style.display = "block";
+          });
+
+        // Calculate salary till date
+        document
+          .getElementById("calculate-salary")
+          .addEventListener("click", function () {
+            const DOJ = new Date(user.DOJ);
+            const today = new Date();
+            const diffTime = Math.abs(today - DOJ);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            const dailySalary = user.Salary / 30;
+            const totalSalary = dailySalary * diffDays;
+
+            document.getElementById("total-salary").innerText =
+              totalSalary.toFixed(2);
+          });
+
+        // Handle update form submission
+        document
+          .getElementById("updateForm")
+          .addEventListener("submit", async function (e) {
+            e.preventDefault();
+            const field = e.target.field.value;
+            const value = e.target.value.value;
+
+            const response = await fetch("/update", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                username: user.username,
+                field,
+                value,
+              }),
+            });
+
+            if (response.ok) {
+              const updatedUser = await response.json();
+              sessionStorage.setItem("user", JSON.stringify(updatedUser));
+              alert("Profile updated successfully. Please refresh the page.");
+            } else {
+              alert("Error updating profile.");
+            }
+          });
+      });
+    </script>
+  </body>
+</html>
